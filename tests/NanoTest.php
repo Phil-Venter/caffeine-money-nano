@@ -38,6 +38,16 @@ class NanoTest extends TestCase
         Nano::forCurrency('XXX');
     }
 
+    public function testAcceptsLowercaseCountryCode(): void
+    {
+        $this->assertSame('US', Nano::forCountry('us')->getCountry());
+    }
+
+    public function testAcceptsLowercaseCurrencyCode(): void
+    {
+        $this->assertSame('USD', Nano::forCurrency('usd')->getCurrency());
+    }
+
     public function testThrowsForUnknownCountryCode(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -201,5 +211,56 @@ class NanoTest extends TestCase
     public function testFormatsZeroDecimalCurrencyCorrectly(): void
     {
         $this->assertSame('￥2,000', Nano::forLocale('ja_JP')->formatCurrency(2_000_000_000_000));
+    }
+
+    public function testFormatDecimalRespectsZeroDecimalCurrency(): void
+    {
+        $this->assertSame('2,000', Nano::forLocale('ja_JP')->formatDecimal(2_000_000_000_000));
+    }
+
+    // -------------------------------------------------------------------------
+    //  Rounding mode overrides
+    // -------------------------------------------------------------------------
+
+    public function testFromMajorRespectsPerCallRoundingMode(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(20_000_000_000, $nano->fromMajor(19.995, PHP_ROUND_HALF_UP));
+        $this->assertSame(19_990_000_000, $nano->fromMajor(19.995, PHP_ROUND_HALF_DOWN));
+    }
+
+    public function testToMajorRespectsPerCallRoundingMode(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(20.0,  $nano->toMajor(19_995_000_000, PHP_ROUND_HALF_UP));
+        $this->assertSame(19.99, $nano->toMajor(19_995_000_000, PHP_ROUND_HALF_DOWN));
+    }
+
+    public function testToMinorRespectsPerCallRoundingMode(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(2000, $nano->toMinor(19_995_000_000, PHP_ROUND_HALF_UP));
+        $this->assertSame(1999, $nano->toMinor(19_995_000_000, PHP_ROUND_HALF_DOWN));
+    }
+
+    public function testToNanoRespectsPerCallRoundingMode(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(2, $nano->toNano(0.0000000015, PHP_ROUND_HALF_UP));
+        $this->assertSame(1, $nano->toNano(0.0000000015, PHP_ROUND_HALF_DOWN));
+    }
+
+    public function testSnapToMinorRespectsPerCallRoundingMode(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(20_000_000_000, $nano->snapToMinor(19_995_000_000, PHP_ROUND_HALF_UP));
+        $this->assertSame(19_990_000_000, $nano->snapToMinor(19_995_000_000, PHP_ROUND_HALF_DOWN));
+    }
+
+    public function testSnapToNanoRespectsPerCallRoundingMode(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(2, $nano->snapToNano(1.5, PHP_ROUND_HALF_UP));
+        $this->assertSame(1, $nano->snapToNano(1.5, PHP_ROUND_HALF_DOWN));
     }
 }

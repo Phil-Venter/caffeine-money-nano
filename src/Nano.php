@@ -167,7 +167,7 @@ class Nano
 
     public function getFractionDigits(): int
     {
-        return (int) ($this->formatter->getAttribute(NumberFormatter::FRACTION_DIGITS) ?: 0);
+        return (int) $this->formatter->getAttribute(NumberFormatter::FRACTION_DIGITS);
     }
 
     public function getLocale(): string

@@ -1,5 +1,11 @@
 # Nano
 
+[![Lint](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/lint.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/lint.yml)
+[![PHP 8.1](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.1.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.1.yml)
+[![PHP 8.2](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.2.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.2.yml)
+[![PHP 8.3](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.3.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.3.yml)
+[![PHP 8.4](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.4.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.4.yml)
+
 Nano-precision currency conversion and locale-aware formatting for PHP.
 
 Converts monetary values to and from integer nanos (10⁹ nanos per major unit), minimising floating-point rounding errors during arithmetic. Wraps PHP's `ext-intl` `NumberFormatter` for locale-aware output. You hold the nano integers - `Nano` just converts and formats them.

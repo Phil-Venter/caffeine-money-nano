@@ -1,6 +1,5 @@
 # Nano
 
-[![Latest Version](https://poser.pugx.org/caffeine/money/v)](https://packagist.org/packages/caffeine/money)
 [![PHP](https://img.shields.io/badge/php-%5E8.1-777BB4)](https://packagist.org/packages/caffeine/money)
 [![License](https://img.shields.io/badge/license-0BSD-blue)](https://opensource.org/licenses/0BSD)
 [![Lint](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/lint.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/lint.yml)

@@ -4,3 +4,4 @@ tests/ export-ignore
 .gitignore export-ignore
 mago.toml export-ignore
 phpunit.xml export-ignore
+README.md export-ignore

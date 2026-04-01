@@ -5,7 +5,7 @@
     "type": "library",
     "license": "0BSD",
     "require": {
-        "php": "^8.4",
+        "php": "^8.1",
         "ext-intl": "*"
     },
     "autoload": {
@@ -20,17 +20,14 @@
     },
     "require-dev": {
         "carthage-software/mago": "*",
-        "pestphp/pest": "^3.0"
+        "phpunit/phpunit": "^9.5"
     },
     "scripts": {
-        "test": "pest",
+        "test": "phpunit",
         "lint": "mago lint",
         "analyze": "mago analyze"
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+        "sort-packages": true
     }
 }

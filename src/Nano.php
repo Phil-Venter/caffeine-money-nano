@@ -6,7 +6,6 @@ namespace Caffeine\Money;
 
 use InvalidArgumentException;
 use NumberFormatter;
-use RoundingMode;
 
 /**
  * Safe operating range: ±9,223,372,036 major units (~±9.2 billion) on 64-bit systems.
@@ -103,7 +102,7 @@ class Nano
 
     public function __construct(
         private string $locale,
-        private RoundingMode $roundingMode = RoundingMode::HalfAwayFromZero,
+        private int $roundingMode = PHP_ROUND_HALF_UP,
     ) {
         $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
     }
@@ -113,7 +112,7 @@ class Nano
     // -------------------------------------------------------------------------
 
     /** @param array|null $server Defaults to $_SERVER. */
-    public static function detect(string $fallbackLocale, RoundingMode $roundingMode = RoundingMode::HalfAwayFromZero, ?array $server = null): self
+    public static function detect(string $fallbackLocale, int $roundingMode = PHP_ROUND_HALF_UP, ?array $server = null): self
     {
         $server ??= $_SERVER;
 
@@ -124,7 +123,7 @@ class Nano
     }
 
     /** @throws InvalidArgumentException If the country code is not recognised. */
-    public static function forCountry(string $country, RoundingMode $roundingMode = RoundingMode::HalfAwayFromZero): self
+    public static function forCountry(string $country, int $roundingMode = PHP_ROUND_HALF_UP): self
     {
         $locale = static::ISO_3166_ALPHA_2_MAP[strtoupper($country)] ?? null;
 
@@ -136,7 +135,7 @@ class Nano
     }
 
     /** @throws InvalidArgumentException If the currency code is not recognised. */
-    public static function forCurrency(string $currency, RoundingMode $roundingMode = RoundingMode::HalfAwayFromZero): self
+    public static function forCurrency(string $currency, int $roundingMode = PHP_ROUND_HALF_UP): self
     {
         $locale = static::ISO_4217_MAP[strtoupper($currency)] ?? null;
 
@@ -147,7 +146,7 @@ class Nano
         return new self($locale, $roundingMode);
     }
 
-    public static function forLocale(string $locale, RoundingMode $roundingMode = RoundingMode::HalfAwayFromZero): self
+    public static function forLocale(string $locale, int $roundingMode = PHP_ROUND_HALF_UP): self
     {
         return new self($locale, $roundingMode);
     }
@@ -176,7 +175,7 @@ class Nano
         return $this->formatter->getLocale() ?: $this->locale;
     }
 
-    public function getRoundingMode(): RoundingMode
+    public function getRoundingMode(): int
     {
         return $this->roundingMode;
     }
@@ -186,12 +185,12 @@ class Nano
     // -------------------------------------------------------------------------
 
     /** @throws InvalidArgumentException If a string amount cannot be parsed. */
-    public function fromMajor(string|float|int $amount, ?RoundingMode $mode = null): int
+    public function fromMajor(string|float|int $amount, ?int $mode = null): int
     {
         return $this->snapToMinor($this->toFloat($amount) * static::NANOS, $mode);
     }
 
-    public function toMajor(int $nanos, ?RoundingMode $mode = null): float
+    public function toMajor(int $nanos, ?int $mode = null): float
     {
         return round($nanos / static::NANOS, $this->getFractionDigits(), $mode ?? $this->roundingMode);
     }
@@ -201,12 +200,12 @@ class Nano
     // -------------------------------------------------------------------------
 
     /** @throws InvalidArgumentException If a string amount cannot be parsed. */
-    public function fromMinor(string|float|int $amount, ?RoundingMode $mode = null): int
+    public function fromMinor(string|float|int $amount, ?int $mode = null): int
     {
         return $this->snapToMinor($this->toFloat($amount) * $this->minorFactor(), $mode);
     }
 
-    public function toMinor(int $nanos, ?RoundingMode $mode = null): int
+    public function toMinor(int $nanos, ?int $mode = null): int
     {
         return (int) round($nanos / $this->minorFactor(), 0, $mode ?? $this->roundingMode);
     }
@@ -216,18 +215,18 @@ class Nano
     // -------------------------------------------------------------------------
 
     /** @throws InvalidArgumentException If a string amount cannot be parsed. */
-    public function toNano(string|float|int $amount, ?RoundingMode $mode = null): int
+    public function toNano(string|float|int $amount, ?int $mode = null): int
     {
         return (int) round($this->toFloat($amount) * static::NANOS, 0, $mode ?? $this->roundingMode);
     }
 
-    public function snapToMinor(int|float $nanos, ?RoundingMode $mode = null): int
+    public function snapToMinor(int|float $nanos, ?int $mode = null): int
     {
         $factor = $this->minorFactor();
         return (int) round($nanos / $factor, 0, $mode ?? $this->roundingMode) * $factor;
     }
 
-    public function snapToNano(int|float $nanos, ?RoundingMode $mode = null): int
+    public function snapToNano(int|float $nanos, ?int $mode = null): int
     {
         return (int) round($nanos, 0, $mode ?? $this->roundingMode);
     }
@@ -236,12 +235,12 @@ class Nano
     //  Formatting
     // -------------------------------------------------------------------------
 
-    public function formatCurrency(int $nanos, ?RoundingMode $mode = null): string
+    public function formatCurrency(int $nanos, ?int $mode = null): string
     {
         return $this->formatter->formatCurrency($this->toMajor($nanos, $mode), $this->getCurrency()) ?: '';
     }
 
-    public function formatDecimal(int $nanos, ?RoundingMode $mode = null): string
+    public function formatDecimal(int $nanos, ?int $mode = null): string
     {
         return $this->getDecimalFormatter()->format($this->toMajor($nanos, $mode)) ?: '';
     }

@@ -2,170 +2,204 @@
 
 declare(strict_types=1);
 
+namespace Caffeine\Money\Tests;
+
 use Caffeine\Money\Nano;
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
-// -------------------------------------------------------------------------
-//  Factory methods
-// -------------------------------------------------------------------------
+class NanoTest extends TestCase
+{
+    // -------------------------------------------------------------------------
+    //  Factory methods
+    // -------------------------------------------------------------------------
 
-it('creates an instance from a locale', function (): void {
-    $nano = Nano::forLocale('en_US');
-    expect($nano->getLocale())->toBe('en_US');
-});
+    public function testCreatesInstanceFromLocale(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame('en_US', $nano->getLocale());
+    }
 
-it('creates an instance from a currency code', function (): void {
-    $nano = Nano::forCurrency('USD');
-    expect($nano->getCurrency())->toBe('USD');
-});
+    public function testCreatesInstanceFromCurrencyCode(): void
+    {
+        $nano = Nano::forCurrency('USD');
+        $this->assertSame('USD', $nano->getCurrency());
+    }
 
-it('creates an instance from a country code', function (): void {
-    $nano = Nano::forCountry('US');
-    expect($nano->getCountry())->toBe('US');
-});
+    public function testCreatesInstanceFromCountryCode(): void
+    {
+        $nano = Nano::forCountry('US');
+        $this->assertSame('US', $nano->getCountry());
+    }
 
-it('throws for an unknown currency code', function (): void {
-    Nano::forCurrency('XXX');
-})->throws(InvalidArgumentException::class);
+    public function testThrowsForUnknownCurrencyCode(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forCurrency('XXX');
+    }
 
-it('throws for an unknown country code', function (): void {
-    Nano::forCountry('XX');
-})->throws(InvalidArgumentException::class);
+    public function testThrowsForUnknownCountryCode(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forCountry('XX');
+    }
 
-it('detects locale from accept-language header', function (): void {
-    $nano = Nano::detect('en_US', server: ['HTTP_ACCEPT_LANGUAGE' => 'ja-JP']);
-    expect($nano->getLocale())->toStartWith('ja');
-});
+    public function testDetectsLocaleFromAcceptLanguageHeader(): void
+    {
+        $nano = Nano::detect('en_US', server: ['HTTP_ACCEPT_LANGUAGE' => 'ja-JP']);
+        $this->assertStringStartsWith('ja', $nano->getLocale());
+    }
 
-it('falls back to default locale when accept-language header is absent', function (): void {
-    $nano = Nano::detect('en_US', server: []);
-    expect($nano->getLocale())->toBe('en_US');
-});
+    public function testFallsBackToDefaultLocaleWhenHeaderAbsent(): void
+    {
+        $nano = Nano::detect('en_US', server: []);
+        $this->assertSame('en_US', $nano->getLocale());
+    }
 
-// -------------------------------------------------------------------------
-//  Getters
-// -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    //  Getters
+    // -------------------------------------------------------------------------
 
-it('returns the currency code', function (): void {
-    expect(Nano::forLocale('en_US')->getCurrency())->toBe('USD');
-    expect(Nano::forLocale('ja_JP')->getCurrency())->toBe('JPY');
-});
+    public function testReturnsCurrencyCode(): void
+    {
+        $this->assertSame('USD', Nano::forLocale('en_US')->getCurrency());
+        $this->assertSame('JPY', Nano::forLocale('ja_JP')->getCurrency());
+    }
 
-it('returns the country code', function (): void {
-    expect(Nano::forLocale('en_US')->getCountry())->toBe('US');
-    expect(Nano::forLocale('ja_JP')->getCountry())->toBe('JP');
-});
+    public function testReturnsCountryCode(): void
+    {
+        $this->assertSame('US', Nano::forLocale('en_US')->getCountry());
+        $this->assertSame('JP', Nano::forLocale('ja_JP')->getCountry());
+    }
 
-it('returns the correct fraction digits for a two-decimal currency', function (): void {
-    expect(Nano::forLocale('en_US')->getFractionDigits())->toBe(2);
-});
+    public function testReturnsTwoFractionDigitsForTwoDecimalCurrency(): void
+    {
+        $this->assertSame(2, Nano::forLocale('en_US')->getFractionDigits());
+    }
 
-it('returns zero fraction digits for a zero-decimal currency', function (): void {
-    expect(Nano::forLocale('ja_JP')->getFractionDigits())->toBe(0);
-});
+    public function testReturnsZeroFractionDigitsForZeroDecimalCurrency(): void
+    {
+        $this->assertSame(0, Nano::forLocale('ja_JP')->getFractionDigits());
+    }
 
-it('returns 3 fraction digits for a three-decimal currency', function (): void {
-    expect(Nano::forCurrency('KWD')->getFractionDigits())->toBe(3);
-});
+    public function testReturnsThreeFractionDigitsForThreeDecimalCurrency(): void
+    {
+        $this->assertSame(3, Nano::forCurrency('KWD')->getFractionDigits());
+    }
 
-// -------------------------------------------------------------------------
-//  fromMajor / toMajor
-// -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    //  fromMajor / toMajor
+    // -------------------------------------------------------------------------
 
-it('converts a major amount to nanos and back', function (): void {
-    $nano = Nano::forLocale('en_US');
-    $nanos = $nano->fromMajor(19.99);
-    expect($nanos)->toBe(19_990_000_000);
-    expect($nano->toMajor($nanos))->toBe(19.99);
-});
+    public function testConvertsMajorAmountToNanosAndBack(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $nanos = $nano->fromMajor(19.99);
+        $this->assertSame(19_990_000_000, $nanos);
+        $this->assertSame(19.99, $nano->toMajor($nanos));
+    }
 
-it('converts a three-decimal currency major amount to nanos and back', function (): void {
-    $nano = Nano::forCurrency('KWD');
-    $nanos = $nano->fromMajor(1.500);
-    expect($nanos)->toBe(1_500_000_000);
-    expect($nano->toMajor($nanos))->toBe(1.5);
-});
+    public function testConvertsThreeDecimalCurrencyMajorAmountToNanosAndBack(): void
+    {
+        $nano = Nano::forCurrency('KWD');
+        $nanos = $nano->fromMajor(1.500);
+        $this->assertSame(1_500_000_000, $nanos);
+        $this->assertSame(1.5, $nano->toMajor($nanos));
+    }
 
-it('converts three-decimal currency minor units (fils) to nanos and back', function (): void {
-    $nano = Nano::forCurrency('KWD');
-    $nanos = $nano->fromMinor(1500);        // 1500 fils = 1.500 KWD
-    expect($nanos)->toBe(1_500_000_000);
-    expect($nano->toMinor($nanos))->toBe(1500);
-});
+    public function testConvertsZeroDecimalCurrencyMajorAmountToNanos(): void
+    {
+        $nano = Nano::forLocale('ja_JP');
+        $this->assertSame(2_000_000_000_000, $nano->fromMajor(2000));
+        $this->assertSame(2000.0, $nano->toMajor(2_000_000_000_000));
+    }
 
-it('snaps to three-decimal minor-unit boundary', function (): void {
-    $nano = Nano::forCurrency('KWD');
-    // 1.5005 KWD — snaps to 1.501 (rounds up at 4th decimal)
-    expect($nano->snapToMinor(1_500_500_000))->toBe(1_501_000_000);
-});
+    public function testAcceptsIntegerMajorAmount(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(100_000_000_000, $nano->fromMajor(100));
+    }
 
-it('converts a zero-decimal currency major amount to nanos', function (): void {
-    $nano = Nano::forLocale('ja_JP');
-    expect($nano->fromMajor(2000))->toBe(2_000_000_000_000);
-    expect($nano->toMajor(2_000_000_000_000))->toBe(2000.0);
-});
+    public function testParsesLocaleFormattedStringAsMajorAmount(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(19_990_000_000, $nano->fromMajor('$19.99'));
+    }
 
-it('accepts an integer major amount', function (): void {
-    $nano = Nano::forLocale('en_US');
-    expect($nano->fromMajor(100))->toBe(100_000_000_000);
-});
+    public function testThrowsWhenStringMajorAmountCannotBeParsed(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forLocale('en_US')->fromMajor('not-a-number');
+    }
 
-it('parses a locale-formatted string as a major amount', function (): void {
-    $nano = Nano::forLocale('en_US');
-    expect($nano->fromMajor('$19.99'))->toBe(19_990_000_000);
-});
+    // -------------------------------------------------------------------------
+    //  fromMinor / toMinor
+    // -------------------------------------------------------------------------
 
-it('throws when a string major amount cannot be parsed', function (): void {
-    Nano::forLocale('en_US')->fromMajor('not-a-number');
-})->throws(InvalidArgumentException::class);
+    public function testConvertsCentsToNanosAndBack(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $nanos = $nano->fromMinor(1999);
+        $this->assertSame(19_990_000_000, $nanos);
+        $this->assertSame(1999, $nano->toMinor($nanos));
+    }
 
-// -------------------------------------------------------------------------
-//  fromMinor / toMinor
-// -------------------------------------------------------------------------
+    public function testConvertsThreeDecimalCurrencyMinorUnitsToNanosAndBack(): void
+    {
+        $nano = Nano::forCurrency('KWD');
+        $nanos = $nano->fromMinor(1500);
+        $this->assertSame(1_500_000_000, $nanos);
+        $this->assertSame(1500, $nano->toMinor($nanos));
+    }
 
-it('converts cents to nanos and back', function (): void {
-    $nano = Nano::forLocale('en_US');
-    $nanos = $nano->fromMinor(1999);
-    expect($nanos)->toBe(19_990_000_000);
-    expect($nano->toMinor($nanos))->toBe(1999);
-});
+    // -------------------------------------------------------------------------
+    //  toNano
+    // -------------------------------------------------------------------------
 
-// -------------------------------------------------------------------------
-//  toNano
-// -------------------------------------------------------------------------
+    public function testConvertsRawValueToNanosWithoutCurrencySnapping(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(1_500_000_000, $nano->toNano(1.5));
+    }
 
-it('converts a raw value to nanos without currency snapping', function (): void {
-    $nano = Nano::forLocale('en_US');
-    expect($nano->toNano(1.5))->toBe(1_500_000_000);
-});
+    // -------------------------------------------------------------------------
+    //  Snap operations
+    // -------------------------------------------------------------------------
 
-// -------------------------------------------------------------------------
-//  Snap operations
-// -------------------------------------------------------------------------
+    public function testSnapsNanosToNearestMinorUnitBoundary(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(20_000_000_000, $nano->snapToMinor(19_995_000_000));
+    }
 
-it('snaps nanos to the nearest minor-unit boundary', function (): void {
-    $nano = Nano::forLocale('en_US');
-    // 19_995_000_000 = $19.995 — snaps to $20.00
-    expect($nano->snapToMinor(19_995_000_000))->toBe(20_000_000_000);
-});
+    public function testSnapsToThreeDecimalMinorUnitBoundary(): void
+    {
+        $nano = Nano::forCurrency('KWD');
+        $this->assertSame(1_501_000_000, $nano->snapToMinor(1_500_500_000));
+    }
 
+    public function testSnapsFloatNanoValueToNearestIntegerNano(): void
+    {
+        $nano = Nano::forLocale('en_US');
+        $this->assertSame(1_000_000_001, $nano->snapToNano(1_000_000_000.6));
+    }
 
-it('snaps a float nano value to the nearest integer nano', function (): void {
-    $nano = Nano::forLocale('en_US');
-    expect($nano->snapToNano(1_000_000_000.6))->toBe(1_000_000_001);
-});
+    // -------------------------------------------------------------------------
+    //  Formatting
+    // -------------------------------------------------------------------------
 
-// -------------------------------------------------------------------------
-//  Formatting
-// -------------------------------------------------------------------------
+    public function testFormatsNanosAsCurrencyString(): void
+    {
+        $this->assertSame('$19.99', Nano::forLocale('en_US')->formatCurrency(19_990_000_000));
+    }
 
-it('formats nanos as a currency string', function (): void {
-    expect(Nano::forLocale('en_US')->formatCurrency(19_990_000_000))->toBe('$19.99');
-});
+    public function testFormatsNanosAsDecimalStringWithoutCurrencySymbol(): void
+    {
+        $this->assertSame('19.99', Nano::forLocale('en_US')->formatDecimal(19_990_000_000));
+    }
 
-it('formats nanos as a decimal string without currency symbol', function (): void {
-    expect(Nano::forLocale('en_US')->formatDecimal(19_990_000_000))->toBe('19.99');
-});
-
-it('formats a zero-decimal currency correctly', function (): void {
-    expect(Nano::forLocale('ja_JP')->formatCurrency(2_000_000_000_000))->toBe('￥2,000');
-});
+    public function testFormatsZeroDecimalCurrencyCorrectly(): void
+    {
+        $this->assertSame('￥2,000', Nano::forLocale('ja_JP')->formatCurrency(2_000_000_000_000));
+    }
+}

@@ -1,6 +1,6 @@
 # Welcome to Mago!
 # For full documentation, see https://mago.carthage.software/tools/overview
-php-version = "8.4.0"
+php-version = "8.1.0"
 
 [source]
 workspace = "."
@@ -14,7 +14,6 @@ tab-width = 4
 use-tabs = false
 
 [linter]
-integrations = ["pest"]
 
 [linter.rules]
 ambiguous-function-call = { enabled = false }

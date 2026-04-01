@@ -2,13 +2,13 @@
 
 Nano-precision currency conversion and locale-aware formatting for PHP.
 
-Converts monetary values to and from integer nanos (10⁹ nanos per major unit), minimising floating-point rounding errors during arithmetic. Wraps PHP's `ext-intl` `NumberFormatter` for locale-aware output. You hold the nano integers — `Nano` just converts and formats them.
+Converts monetary values to and from integer nanos (10⁹ nanos per major unit), minimising floating-point rounding errors during arithmetic. Wraps PHP's `ext-intl` `NumberFormatter` for locale-aware output. You hold the nano integers - `Nano` just converts and formats them.
 
-> **If your project can support it, use a full money library instead — [`brick/money`](https://github.com/brick/money) or [`moneyphp/money`](https://github.com/moneyphp/money).** This library exists for situations where adopting one of those is not practical right away.
+> **If your project can support it, use a full money library instead - [`brick/money`](https://github.com/brick/money) or [`moneyphp/money`](https://github.com/moneyphp/money).** This library exists for situations where adopting one of those is not practical right away.
 
 ## Requirements
 
-- PHP 8.4+
+- PHP 8.1+
 - `ext-intl`
 
 ## Installation
@@ -65,15 +65,13 @@ Nano::forLocale('ja_JP')->formatCurrency(2_000_000_000_000); // "￥2,000"
 
 ### Rounding
 
-The default rounding mode is `RoundingMode::HalfAwayFromZero`. Override per-instance or per-call:
+The default rounding mode is `PHP_ROUND_HALF_UP`. Override per-instance or per-call:
 
 ```php
-use RoundingMode;
+$nano = Nano::forLocale('en_US', PHP_ROUND_HALF_EVEN);
 
-$nano = Nano::forLocale('en_US', RoundingMode::HalfEven);
-
-$nano->fromMajor(19.995, RoundingMode::HalfUp);
-$nano->snapToMinor(19_995_000_000, RoundingMode::HalfDown);
+$nano->fromMajor(19.995, PHP_ROUND_HALF_UP);
+$nano->snapToMinor(19_995_000_000, PHP_ROUND_HALF_DOWN);
 ```
 
 ### Snapping
@@ -88,7 +86,7 @@ $nano = Nano::forCurrency('KWD'); // 3 decimal places
 $nano->snapToMinor(1_500_500_000); // 1_501_000_000   (1.5005 → 1.501 KWD)
 ```
 
-`snapToNano` rounds a float nano value to the nearest integer nano — useful after arithmetic that may produce fractional nanos:
+`snapToNano` rounds a float nano value to the nearest integer nano - useful after arithmetic that may produce fractional nanos:
 
 ```php
 $nano->snapToNano(1_000_000_000.6); // 1_000_000_001
@@ -101,7 +99,7 @@ $nano->getLocale();         // "en_US"
 $nano->getCurrency();       // "USD"
 $nano->getCountry();        // "US"
 $nano->getFractionDigits(); // 2
-$nano->getRoundingMode();   // RoundingMode::HalfAwayFromZero
+$nano->getRoundingMode();   // PHP_ROUND_HALF_UP
 ```
 
 ## Safe operating range
@@ -110,4 +108,4 @@ Nanos are stored as PHP `int`. On 64-bit systems the safe range is ±9,223,372,0
 
 ## License
 
-[0BSD](https://opensource.org/licenses/0BSD) — do whatever you want, no attribution required.
+[0BSD](https://opensource.org/licenses/0BSD) - do whatever you want, no attribution required.

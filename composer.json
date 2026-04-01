@@ -1,0 +1,36 @@
+{
+    "name": "caffeine/money",
+    "description": "Convert monetary values to and from integer nanos to minimise floating-point rounding errors, with locale-aware formatting via ext-intl.",
+    "minimum-stability": "stable",
+    "type": "library",
+    "license": "0BSD",
+    "require": {
+        "php": "^8.4",
+        "ext-intl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Caffeine\\Money\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Caffeine\\Money\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "carthage-software/mago": "*",
+        "pestphp/pest": "^3.0"
+    },
+    "scripts": {
+        "test": "pest",
+        "lint": "mago lint",
+        "analyze": "mago analyze"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

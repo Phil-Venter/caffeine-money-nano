@@ -16,20 +16,17 @@ class NanoTest extends TestCase
 
     public function testCreatesInstanceFromLocale(): void
     {
-        $nano = Nano::forLocale('en_US');
-        $this->assertSame('en_US', $nano->getLocale());
+        $this->assertSame('en_US', Nano::forLocale('en_US')->getLocale());
     }
 
     public function testCreatesInstanceFromCurrencyCode(): void
     {
-        $nano = Nano::forCurrency('USD');
-        $this->assertSame('USD', $nano->getCurrency());
+        $this->assertSame('USD', Nano::forCurrency('USD')->getCurrency());
     }
 
     public function testCreatesInstanceFromCountryCode(): void
     {
-        $nano = Nano::forCountry('US');
-        $this->assertSame('US', $nano->getCountry());
+        $this->assertSame('US', Nano::forCountry('US')->getCountry());
     }
 
     public function testThrowsForUnknownCurrencyCode(): void
@@ -126,14 +123,12 @@ class NanoTest extends TestCase
 
     public function testAcceptsIntegerMajorAmount(): void
     {
-        $nano = Nano::forLocale('en_US');
-        $this->assertSame(100_000_000_000, $nano->fromMajor(100));
+        $this->assertSame(100_000_000_000, Nano::forLocale('en_US')->fromMajor(100));
     }
 
     public function testParsesLocaleFormattedStringAsMajorAmount(): void
     {
-        $nano = Nano::forLocale('en_US');
-        $this->assertSame(19_990_000_000, $nano->fromMajor('$19.99'));
+        $this->assertSame(19_990_000_000, Nano::forLocale('en_US')->fromMajor('$19.99'));
     }
 
     public function testThrowsWhenStringMajorAmountCannotBeParsed(): void
@@ -168,8 +163,7 @@ class NanoTest extends TestCase
 
     public function testConvertsRawValueToNanosWithoutCurrencySnapping(): void
     {
-        $nano = Nano::forLocale('en_US');
-        $this->assertSame(1_500_000_000, $nano->toNano(1.5));
+        $this->assertSame(1_500_000_000, Nano::forLocale('en_US')->toNano(1.5));
     }
 
     // -------------------------------------------------------------------------
@@ -178,20 +172,17 @@ class NanoTest extends TestCase
 
     public function testSnapsNanosToNearestMinorUnitBoundary(): void
     {
-        $nano = Nano::forLocale('en_US');
-        $this->assertSame(20_000_000_000, $nano->snapToMinor(19_995_000_000));
+        $this->assertSame(20_000_000_000, Nano::forLocale('en_US')->snapToMinor(19_995_000_000));
     }
 
     public function testSnapsToThreeDecimalMinorUnitBoundary(): void
     {
-        $nano = Nano::forCurrency('KWD');
-        $this->assertSame(1_501_000_000, $nano->snapToMinor(1_500_500_000));
+        $this->assertSame(1_501_000_000, Nano::forCurrency('KWD')->snapToMinor(1_500_500_000));
     }
 
     public function testSnapsFloatNanoValueToNearestIntegerNano(): void
     {
-        $nano = Nano::forLocale('en_US');
-        $this->assertSame(1_000_000_001, $nano->snapToNano(1_000_000_000.6));
+        $this->assertSame(1_000_000_001, Nano::forLocale('en_US')->snapToNano(1_000_000_000.6));
     }
 
     // -------------------------------------------------------------------------

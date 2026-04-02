@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Caffeine\Money;
 
 use InvalidArgumentException;
+use Locale;
 use NumberFormatter;
 
 /**
@@ -117,7 +118,7 @@ class Nano
         $server ??= $_SERVER;
 
         $acceptLanguage = (string) ($server['HTTP_ACCEPT_LANGUAGE'] ?? $fallbackLocale);
-        $locale = \Locale::acceptFromHttp($acceptLanguage) ?: $fallbackLocale;
+        $locale = Locale::acceptFromHttp($acceptLanguage) ?: $fallbackLocale;
 
         return new self($locale, $roundingMode);
     }
@@ -157,7 +158,7 @@ class Nano
 
     public function getCountry(): string
     {
-        return \Locale::getRegion($this->getLocale()) ?? '';
+        return Locale::getRegion($this->getLocale()) ?? '';
     }
 
     public function getCurrency(): string

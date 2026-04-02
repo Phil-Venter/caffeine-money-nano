@@ -125,7 +125,7 @@ class Nano
     /** @throws InvalidArgumentException If the country code is not recognised. */
     public static function forCountry(string $country, int $roundingMode = PHP_ROUND_HALF_UP): self
     {
-        $locale = static::ISO_3166_ALPHA_2_MAP[strtoupper($country)] ?? null;
+        $locale = self::ISO_3166_ALPHA_2_MAP[strtoupper($country)] ?? null;
 
         if ($locale === null) {
             throw new InvalidArgumentException(sprintf("No canonical locale found for country '%s'.", $country));
@@ -137,7 +137,7 @@ class Nano
     /** @throws InvalidArgumentException If the currency code is not recognised. */
     public static function forCurrency(string $currency, int $roundingMode = PHP_ROUND_HALF_UP): self
     {
-        $locale = static::ISO_4217_MAP[strtoupper($currency)] ?? null;
+        $locale = self::ISO_4217_MAP[strtoupper($currency)] ?? null;
 
         if ($locale === null) {
             throw new InvalidArgumentException(sprintf("No canonical locale found for currency '%s'.", $currency));
@@ -188,7 +188,7 @@ class Nano
     public function fromMajor(string|float|int $amount, ?int $mode = null): int
     {
         if (is_numeric($amount)) {
-            return $this->snapToMinor((float) $amount * static::NANOS, $mode);
+            return $this->snapToMinor((float) $amount * self::NANOS, $mode);
         }
 
         $result = $this->formatter->parse($amount);
@@ -196,12 +196,12 @@ class Nano
             throw new InvalidArgumentException(sprintf("Unable to parse amount '%s'.", $amount));
         }
 
-        return $this->snapToMinor((float) $result * static::NANOS, $mode);
+        return $this->snapToMinor((float) $result * self::NANOS, $mode);
     }
 
     public function toMajor(int $nanos, ?int $mode = null): float
     {
-        return round($nanos / static::NANOS, $this->getFractionDigits(), $mode ?? $this->roundingMode);
+        return round($nanos / self::NANOS, $this->getFractionDigits(), $mode ?? $this->roundingMode);
     }
 
     // -------------------------------------------------------------------------
@@ -224,7 +224,7 @@ class Nano
 
     public function toNano(float|int $amount, ?int $mode = null): int
     {
-        return (int) round($amount * static::NANOS, 0, $mode ?? $this->roundingMode);
+        return (int) round($amount * self::NANOS, 0, $mode ?? $this->roundingMode);
     }
 
     public function snapToMinor(int|float $nanos, ?int $mode = null): int
@@ -263,6 +263,6 @@ class Nano
 
     private function minorFactor(): int
     {
-        return (int) (static::NANOS / (10 ** $this->getFractionDigits()));
+        return (int) (self::NANOS / (10 ** $this->getFractionDigits()));
     }
 }

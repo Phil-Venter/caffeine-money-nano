@@ -187,7 +187,16 @@ class Nano
     /** @throws InvalidArgumentException If a string amount cannot be parsed. */
     public function fromMajor(string|float|int $amount, ?int $mode = null): int
     {
-        return $this->snapToMinor($this->toFloat($amount) * static::NANOS, $mode);
+        if (is_numeric($amount)) {
+            return $this->snapToMinor((float) $amount * static::NANOS, $mode);
+        }
+
+        $result = $this->formatter->parse($amount);
+        if ($result === false) {
+            throw new InvalidArgumentException(sprintf("Unable to parse amount '%s'.", $amount));
+        }
+
+        return $this->snapToMinor((float) $result * static::NANOS, $mode);
     }
 
     public function toMajor(int $nanos, ?int $mode = null): float
@@ -199,10 +208,9 @@ class Nano
     //  Minor-unit conversions (e.g. cents)
     // -------------------------------------------------------------------------
 
-    /** @throws InvalidArgumentException If a string amount cannot be parsed. */
-    public function fromMinor(string|float|int $amount, ?int $mode = null): int
+    public function fromMinor(float|int $amount, ?int $mode = null): int
     {
-        return $this->snapToMinor($this->toFloat($amount) * $this->minorFactor(), $mode);
+        return $this->snapToMinor($amount * $this->minorFactor(), $mode);
     }
 
     public function toMinor(int $nanos, ?int $mode = null): int
@@ -214,10 +222,9 @@ class Nano
     //  Nano-level operations
     // -------------------------------------------------------------------------
 
-    /** @throws InvalidArgumentException If a string amount cannot be parsed. */
-    public function toNano(string|float|int $amount, ?int $mode = null): int
+    public function toNano(float|int $amount, ?int $mode = null): int
     {
-        return (int) round($this->toFloat($amount) * static::NANOS, 0, $mode ?? $this->roundingMode);
+        return (int) round($amount * static::NANOS, 0, $mode ?? $this->roundingMode);
     }
 
     public function snapToMinor(int|float $nanos, ?int $mode = null): int
@@ -242,40 +249,20 @@ class Nano
 
     public function formatDecimal(int $nanos, ?int $mode = null): string
     {
-        return $this->getDecimalFormatter()->format($this->toMajor($nanos, $mode)) ?: '';
+        if ($this->decimalFormatter === null) {
+            $this->decimalFormatter = new NumberFormatter($this->getLocale(), NumberFormatter::DECIMAL);
+            $this->decimalFormatter->setAttribute(NumberFormatter::FRACTION_DIGITS, $this->getFractionDigits());
+        }
+
+        return $this->decimalFormatter->format($this->toMajor($nanos, $mode)) ?: '';
     }
 
     // -------------------------------------------------------------------------
     //  Internal helpers
     // -------------------------------------------------------------------------
 
-    /** @throws InvalidArgumentException */
-    private function toFloat(string|float|int $amount): float
-    {
-        if (is_numeric($amount)) {
-            return (float) $amount;
-        }
-
-        $result = $this->formatter->parse($amount);
-        if ($result === false) {
-            throw new InvalidArgumentException(sprintf("Unable to parse amount '%s'.", $amount));
-        }
-
-        return (float) $result;
-    }
-
     private function minorFactor(): int
     {
         return (int) (static::NANOS / (10 ** $this->getFractionDigits()));
-    }
-
-    private function getDecimalFormatter(): NumberFormatter
-    {
-        if ($this->decimalFormatter === null) {
-            $this->decimalFormatter = new NumberFormatter($this->getLocale(), NumberFormatter::DECIMAL);
-            $this->decimalFormatter->setAttribute(NumberFormatter::FRACTION_DIGITS, $this->getFractionDigits());
-        }
-
-        return $this->decimalFormatter;
     }
 }

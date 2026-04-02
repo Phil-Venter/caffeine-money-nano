@@ -1,11 +1,11 @@
-name: Lint
+name: PHP 8.5
 
 on:
   push:
   pull_request:
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +21,5 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Lint
-        run: vendor/bin/mago lint
-
-      - name: Analyze
-        run: vendor/bin/mago analyze
+      - name: Run tests
+        run: vendor/bin/phpunit

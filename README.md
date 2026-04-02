@@ -7,6 +7,7 @@
 [![PHP 8.2](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.2.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.2.yml)
 [![PHP 8.3](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.3.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.3.yml)
 [![PHP 8.4](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.4.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.4.yml)
+[![PHP 8.5](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.5.yml/badge.svg)](https://github.com/Phil-Venter/caffeine-money-nano/actions/workflows/php-8.5.yml)
 
 Nano-precision currency conversion and locale-aware formatting for PHP.
 

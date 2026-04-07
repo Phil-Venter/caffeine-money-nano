@@ -35,6 +35,18 @@ class NanoTest extends TestCase
         Nano::forCurrency('XXX');
     }
 
+    public function testThrowsForLocaleWithoutRegion(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forLocale('en');
+    }
+
+    public function testThrowsForLocaleWithUnknownRegion(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forLocale('en_XX');
+    }
+
     public function testAcceptsLowercaseCountryCode(): void
     {
         $this->assertSame('US', Nano::forCountry('us')->getCountry());

@@ -35,6 +35,24 @@ class NanoTest extends TestCase
         Nano::forCurrency('XXX');
     }
 
+    public function testThrowsForLocaleWithoutRegion(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forLocale('en');
+    }
+
+    public function testThrowsForLocaleWithUnknownLanguage(): void
+    {
+        $this->expectException(\ValueError::class);
+        Nano::forLocale('xx_US');
+    }
+
+    public function testThrowsForLocaleWithUnknownRegion(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Nano::forLocale('en_XX');
+    }
+
     public function testAcceptsLowercaseCountryCode(): void
     {
         $this->assertSame('US', Nano::forCountry('us')->getCountry());
@@ -223,7 +241,7 @@ class NanoTest extends TestCase
     public function testToMajorRespectsPerCallRoundingMode(): void
     {
         $nano = Nano::forLocale('en_US');
-        $this->assertSame(20.0,  $nano->toMajor(19_995_000_000, PHP_ROUND_HALF_UP));
+        $this->assertSame(20.0, $nano->toMajor(19_995_000_000, PHP_ROUND_HALF_UP));
         $this->assertSame(19.99, $nano->toMajor(19_995_000_000, PHP_ROUND_HALF_DOWN));
     }
 

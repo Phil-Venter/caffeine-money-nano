@@ -7,6 +7,7 @@ namespace Caffeine\Money;
 use InvalidArgumentException;
 use Locale;
 use NumberFormatter;
+use ValueError;
 
 /**
  * Safe operating range: ±9,223,372,036 major units (~±9.2 billion) on 64-bit systems.
@@ -102,7 +103,7 @@ class Nano
     private ?NumberFormatter $decimalFormatter = null;
 
     public function __construct(
-        private string $locale,
+        string $locale,
         private int $roundingMode = PHP_ROUND_HALF_UP,
     ) {
         $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
@@ -147,9 +148,20 @@ class Nano
         return new self($locale, $roundingMode);
     }
 
+    /**
+     * @throws InvalidArgumentException If the locale cannot be resolved to a currency.
+     * @throws ValueError If the locale string is rejected by NumberFormatter.
+     */
     public static function forLocale(string $locale, int $roundingMode = PHP_ROUND_HALF_UP): self
     {
-        return new self($locale, $roundingMode);
+        $instance = new self($locale, $roundingMode);
+
+        $region = trim((string) Locale::getRegion($instance->getLocale()));
+        if ($region === '') {
+            throw new InvalidArgumentException(sprintf("Unable to resolve a locale from '%s'.", $locale));
+        }
+
+        return $instance;
     }
 
     // -------------------------------------------------------------------------
@@ -173,7 +185,7 @@ class Nano
 
     public function getLocale(): string
     {
-        return $this->formatter->getLocale() ?: $this->locale;
+        return $this->formatter->getLocale() ?: '';
     }
 
     public function getRoundingMode(): int
